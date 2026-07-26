@@ -47,11 +47,13 @@ Configure the following variables in your `.env` file:
 ### Quick Start
 
 ```bash
-# Copy environment file template (if provided)
+# Copy environment file template (if provided) and Caddy
 cp .env.example .env
+cp Caddyfile.example Caddyfile
 
 # Edit .env with your values
 nvim .env  # or use your preferred editor
+nvim Caddyfile
 
 # Start all services
 docker-compose up -d
