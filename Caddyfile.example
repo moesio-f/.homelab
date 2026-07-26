@@ -1,0 +1,12 @@
+{
+	email {$ACME_EMAIL}
+}
+
+{$JELLYFIN_DOMAIN} {
+    @blocked {
+        not remote_ip 192.168.1.0/24
+    }
+    respond @blocked 403
+
+	reverse_proxy jellyfin:8096
+}

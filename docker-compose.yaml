@@ -1,0 +1,123 @@
+x-common-environment: &common-env
+  PUID: ${PUID:-1001}
+  PGID: ${PGID:-1001}
+  TZ: ${TZ:-America/Fortaleza}
+
+x-media-volume-1: &media-volume-1
+  type: bind
+  source: ${MEDIA_PATH}
+  target: /media
+
+x-media-volume-2: &media-volume-2
+  type: bind
+  source: ${MEDIA_2_PATH}
+  target: /media-2
+
+x-torrent-volume: &torrent-volume
+  type: bind
+  source: ${TORRENTS_PATH}
+  target: /torrents
+
+x-service-default: &service-default
+  restart: 'unless-stopped'
+  extra_hosts:
+    - 'host.docker.internal:host-gateway'
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    environment:
+      JELLYFIN_DOMAIN: "${JELLYFIN_DOMAIN}"
+      ACME_EMAIL: "${ACME_EMAIL}"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./data/caddy:/data
+      - ./config/caddy:/config
+    depends_on:
+      - jellyfin
+    <<: *service-default
+
+  jellyfin:
+    image: jellyfin/jellyfin:preview
+    container_name: jellyfin
+    user: ${PUID:-1001}:${PGID:-1001}
+    volumes:
+      - *media-volume-1
+      - *media-volume-2
+      - ./config/jellyfin:/config
+      - ./cache/jellyfin:/cache
+    ports:
+      - 8096:8096/tcp
+      - 7359:7359/udp
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    <<: *service-default
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    environment:
+      <<: *common-env
+      WEBUI_PORT: 3344
+      TORRENTING_PORT: 6881
+    volumes:
+      - ./config/qbittorrent:/config
+      - ./themes/qbittorrent:/themes/qbittorrent
+      - *media-volume-1
+      - *media-volume-2
+      - *torrent-volume
+    ports:
+      - 3344:3344
+      - 6881:6881
+      - 6881:6881/udp
+    <<: *service-default
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      <<: *common-env
+    volumes:
+      - ./config/prowlarr:/config
+    ports:
+      - 9696:9696
+    <<: *service-default
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      <<: *common-env
+    volumes:
+      - ./config/radarr:/config
+      - *media-volume-1
+      - *media-volume-2
+      - *torrent-volume
+    ports:
+      - 7878:7878
+    <<: *service-default
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      <<: *common-env
+    volumes:
+      - ./config/sonarr:/config
+      - *media-volume-1
+      - *media-volume-2
+      - *torrent-volume
+    ports:
+      - 8989:8989
+    <<: *service-default
