@@ -28,6 +28,7 @@ This repository contains a Docker Compose configuration for setting up a Jellyfi
 - **Prowlarr** - Indexer search aggregator
 - **Radarr** - Movie management
 - **Sonarr** - TV show management
+- **cloudflare-ddns** - Keeps a Cloudflare DNS record pointed at this host's current public IP
 
 ### Environment Variables
 
@@ -43,6 +44,13 @@ Configure the following variables in your `.env` file:
 | `PUID` | User ID for containers | 1001 |
 | `PGID` | Group ID for containers | 1001 |
 | `TZ` | Timezone | America/Fortaleza |
+| `CLOUDFLARE_API_TOKEN` | Cloudflare API token with `Zone:DNS:Edit` on the target zone | — |
+| `CLOUDFLARE_ZONE_ID` | Zone ID that owns the record(s) to update | — |
+| `CLOUDFLARE_RECORD_NAME` | Comma-separated record name(s), e.g. `home.example.com` | — |
+| `CLOUDFLARE_RECORD_TYPE` | Record type to manage (`A` or `AAAA`) | A |
+| `CLOUDFLARE_TTL` | TTL applied to managed records | 300 |
+| `CLOUDFLARE_PROXIED` | Whether managed records are proxied through Cloudflare | false |
+| `CF_DDNS_INTERVAL_SECONDS` | Seconds between public IP checks | 300 |
 
 ### Quick Start
 
@@ -103,3 +111,4 @@ docker-compose up -d --remove-orphans
 - Caddy automatically handles HTTPS with Let's Encrypt when a valid domain is configured;
 - All services use the same user/group IDs (PUID/PGID) for proper file permissions;
 - Torrent downloads are stored in `$TORRENTS_PATH`, which should be mapped to `/torrents` inside containers;
+- `cloudflare-ddns` uses the [cloudflare-python](https://github.com/cloudflare/cloudflare-python) SDK to check the host's public IP on an interval and update the configured DNS record(s) when it changes; create a scoped API token (Zone:DNS:Edit) rather than a Global API Key;

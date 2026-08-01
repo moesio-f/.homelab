@@ -121,3 +121,16 @@ services:
     ports:
       - 8989:8989
     <<: *service-default
+
+  cloudflare-ddns:
+    build: ./cloudflare-ddns
+    container_name: cloudflare-ddns
+    environment:
+      CLOUDFLARE_API_TOKEN: "${CLOUDFLARE_API_TOKEN}"
+      CLOUDFLARE_ZONE_ID: "${CLOUDFLARE_ZONE_ID}"
+      CLOUDFLARE_RECORD_NAME: "${CLOUDFLARE_RECORD_NAME}"
+      CLOUDFLARE_RECORD_TYPE: "${CLOUDFLARE_RECORD_TYPE:-A}"
+      CLOUDFLARE_TTL: "${CLOUDFLARE_TTL:-300}"
+      CLOUDFLARE_PROXIED: "${CLOUDFLARE_PROXIED:-true}"
+      CF_DDNS_INTERVAL_SECONDS: "${CF_DDNS_INTERVAL_SECONDS:-300}"
+    <<: *service-default
