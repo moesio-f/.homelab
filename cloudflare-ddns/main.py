@@ -102,10 +102,10 @@ def sync_record(
     help="TTL to set on managed records (1 = automatic).",
 )
 @click.option(
-    "--proxied/--no-proxied",
+    "--proxied",
     envvar="CLOUDFLARE_PROXIED",
-    default=False,
-    help="Whether records should be proxied through Cloudflare.",
+    default="true",
+    help="Comma-separated proxied flags (true/false) matching record names. A single value applies to all.",
 )
 @click.option(
     "--ip-provider",
@@ -131,7 +131,7 @@ def main(
     record_name: str,
     record_type: str,
     ttl: int,
-    proxied: bool,
+    proxied: str,
     ip_provider: str,
     interval: int,
     once: bool,
@@ -142,13 +142,16 @@ def main(
 
     client = Cloudflare(api_token=api_token)
     names = [n.strip() for n in record_name.split(",") if n.strip()]
+    proxied_flags = [p.strip().lower() == "true" for p in proxied.split(",")]
+    if len(proxied_flags) != len(names):
+        proxied_flags = [proxied_flags[0]] * len(names)
 
     while True:
         try:
             ip_address = get_public_ip(ip_provider)
-            for name in names:
+            for name, rec_proxied in zip(names, proxied_flags):
                 sync_record(
-                    client, zone_id, name, record_type, ip_address, ttl, proxied
+                    client, zone_id, name, record_type, ip_address, ttl, rec_proxied
                 )
         except APIError as e:
             click.echo(f"[cloudflare-ddns] Cloudflare API error: {e}", err=True)

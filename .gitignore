@@ -16,3 +16,6 @@ themes/*
 # Non-trackable files
 *.env
 Caddyfile
+
+# Python
+__pycache__/
