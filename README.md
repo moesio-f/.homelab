@@ -12,7 +12,8 @@ This repository contains a simple template for a personal media server with stre
     - Radarr: `7878/HTTP`
     - Sonarr: `8989/HTTP`
     - Prowlar: `9696/HTTP`
-    - qBittorrent: `3344/HTTP`;
+    - qBittorrent: `3344/HTTP`
+    - Bazarr: `6767/HTTP`
 - Access each application web-interfaces and configure them accordingly;
 
 ## Detailed Setup Guide
@@ -28,6 +29,7 @@ This repository contains a Docker Compose configuration for setting up a Jellyfi
 - **Prowlarr** - Indexer search aggregator
 - **Radarr** - Movie management
 - **Sonarr** - TV show management
+- **Bazarr** - Subtitle management
 - **cloudflare-ddns** - Keeps a Cloudflare DNS record pointed at this host's current public IP
 
 ### Environment Variables
@@ -77,6 +79,7 @@ docker-compose ps
 - Prowlarr: `http://localhost:9696`
 - Radarr: `http://localhost:7878`
 - Sonarr: `http://localhost:8989`
+- Bazarr: `http://localhost:6767`
 
 ### Stopping Services
 

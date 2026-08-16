@@ -122,6 +122,19 @@ services:
       - 8989:8989
     <<: *service-default
 
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    environment:
+      <<: *common-env
+    volumes:
+      - ./config/bazarr:/config
+      - *media-volume-1
+      - *media-volume-2
+    ports:
+      - 6767:6767
+    <<: *service-default
+
   cloudflare-ddns:
     build: ./cloudflare-ddns
     container_name: cloudflare-ddns
