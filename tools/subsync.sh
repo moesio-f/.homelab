@@ -26,7 +26,7 @@ docker run -d --name subsync --rm \
     -p "5050:3000" \
     -e TZ="$(cat /etc/timezone 2>/dev/null || echo UTC)" \
     -e SCAN_PATHS="$(IFS=,; echo "${SCAN_PATHS[*]}")" \
-    -e INCLUDE_ENGINES="alass,autosubsync" \
+    -e INCLUDE_ENGINES="alass,autosubsync,ffsubsync" \
     -e CRON_SCHEDULE="disabled" \
     -e MAX_CONCURRENT_SYNC_TASKS=1 \
     -e PUID=1001 \
