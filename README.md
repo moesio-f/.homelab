@@ -32,6 +32,34 @@ This repository contains a Docker Compose configuration for setting up a Jellyfi
 - **Bazarr** - Subtitle management
 - **cloudflare-ddns** - Keeps a Cloudflare DNS record pointed at this host's current public IP
 
+### Attaching Services from Other Repositories
+
+All services run on a shared Docker network named `homelab`, created by this stack.
+To plug a container from another repository into it, declare the network as external
+in that repository's `docker-compose.yaml`:
+
+```yaml
+services:
+  my-service:
+    image: my/image
+    networks:
+      - homelab
+
+networks:
+  homelab:
+    external: true
+```
+
+Start this stack first so the network exists, then bring the other stack up as usual.
+Containers reach each other by service/container name (e.g. `http://jellyfin:8096`),
+so a plugged-in service can be reverse-proxied by adding a block to the `Caddyfile`:
+
+```
+my-service.example.com {
+    reverse_proxy my-service:8080
+}
+```
+
 ### Environment Variables
 
 Configure the following variables in your `.env` file:

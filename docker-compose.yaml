@@ -20,6 +20,8 @@ x-torrent-volume: &torrent-volume
 
 x-service-default: &service-default
   restart: 'unless-stopped'
+  networks:
+    - homelab
   extra_hosts:
     - 'host.docker.internal:host-gateway'
 
@@ -147,3 +149,7 @@ services:
       CLOUDFLARE_PROXIED: "${CLOUDFLARE_PROXIED:-true}"
       CF_DDNS_INTERVAL_SECONDS: "${CF_DDNS_INTERVAL_SECONDS:-300}"
     <<: *service-default
+
+networks:
+  homelab:
+    name: homelab
