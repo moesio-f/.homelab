@@ -74,6 +74,7 @@ Configure the following variables in your `.env` file:
 | `PUID` | User ID for containers | 1001 |
 | `PGID` | Group ID for containers | 1001 |
 | `TZ` | Timezone | America/Fortaleza |
+| `LAN_IP` | Host IP that published ports bind to (required, keeps LAN services off `0.0.0.0`) | — |
 | `CLOUDFLARE_API_TOKEN` | Cloudflare API token with `Zone:DNS:Edit` on the target zone | — |
 | `CLOUDFLARE_ZONE_ID` | Zone ID that owns the record(s) to update | — |
 | `CLOUDFLARE_RECORD_NAME` | Comma-separated record name(s), e.g. `home.example.com` | — |
@@ -103,11 +104,13 @@ docker-compose ps
 ### Access Services
 
 - Jellyfin Web UI: `https://your.domain.com` (via Caddy)
-- qBittorrent Web UI: `http://localhost:3344`
-- Prowlarr: `http://localhost:9696`
-- Radarr: `http://localhost:7878`
-- Sonarr: `http://localhost:8989`
-- Bazarr: `http://localhost:6767`
+- qBittorrent Web UI: `http://<LAN_IP>:3344`
+- Prowlarr: `http://<LAN_IP>:9696`
+- Radarr: `http://<LAN_IP>:7878`
+- Sonarr: `http://<LAN_IP>:8989`
+- Bazarr: `http://<LAN_IP>:6767`
+
+`<LAN_IP>` is the value set in `.env`. These ports are bound to that IP only: `localhost`/`127.0.0.1` on the host won't reach them; use the LAN IP directly (or an SSH tunnel to it). Caddy's `80`/`443` remain on all interfaces since they serve the public domain.
 
 ### Stopping Services
 

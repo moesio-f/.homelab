@@ -45,7 +45,7 @@ services:
     <<: *service-default
 
   jellyfin:
-    image: jellyfin/jellyfin:preview
+    image: jellyfin/jellyfin:latest
     container_name: jellyfin
     user: ${PUID:-1001}:${PGID:-1001}
     volumes:
@@ -54,8 +54,8 @@ services:
       - ./config/jellyfin:/config
       - ./cache/jellyfin:/cache
     ports:
-      - 8096:8096/tcp
-      - 7359:7359/udp
+      - ${LAN_IP:?LAN IP is required in .env - see env.example}:8096:8096/tcp
+      - ${LAN_IP:?LAN IP is required in .env - see env.example}:7359:7359/udp
     runtime: nvidia
     deploy:
       resources:
@@ -80,9 +80,9 @@ services:
       - *media-volume-2
       - *torrent-volume
     ports:
-      - 3344:3344
-      - 6881:6881
-      - 6881:6881/udp
+      - ${LAN_IP:?LAN IP is required in .env - see env.example}:3344:3344
+      - ${LAN_IP:?LAN IP is required in .env - see env.example}:6881:6881
+      - ${LAN_IP:?LAN IP is required in .env - see env.example}:6881:6881/udp
     <<: *service-default
 
   prowlarr:
@@ -93,7 +93,7 @@ services:
     volumes:
       - ./config/prowlarr:/config
     ports:
-      - 9696:9696
+      - ${LAN_IP:?LAN IP is required in .env - see env.example}:9696:9696
     <<: *service-default
 
   radarr:
@@ -107,7 +107,7 @@ services:
       - *media-volume-2
       - *torrent-volume
     ports:
-      - 7878:7878
+      - ${LAN_IP:?LAN IP is required in .env - see env.example}:7878:7878
     <<: *service-default
 
   sonarr:
@@ -121,7 +121,7 @@ services:
       - *media-volume-2
       - *torrent-volume
     ports:
-      - 8989:8989
+      - ${LAN_IP:?LAN IP is required in .env - see env.example}:8989:8989
     <<: *service-default
 
   bazarr:
@@ -134,7 +134,7 @@ services:
       - *media-volume-1
       - *media-volume-2
     ports:
-      - 6767:6767
+      - ${LAN_IP:?LAN IP is required in .env - see env.example}:6767:6767
     <<: *service-default
 
   cloudflare-ddns:
