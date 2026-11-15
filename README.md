@@ -14,6 +14,7 @@ This repository contains a simple template for a personal media server with stre
     - Prowlar: `9696/HTTP`
     - qBittorrent: `3344/HTTP`
     - Bazarr: `6767/HTTP`
+    - Open WebUI: `8080/HTTP`
 - Access each application web-interfaces and configure them accordingly;
 
 ## Detailed Setup Guide
@@ -30,6 +31,7 @@ This repository contains a Docker Compose configuration for setting up a Jellyfi
 - **Radarr** - Movie management
 - **Sonarr** - TV show management
 - **Bazarr** - Subtitle management
+- **Open WebUI** - LLM chat interface for the household, using external OpenAI-compatible APIs (OpenRouter)
 - **cloudflare-ddns** - Keeps a Cloudflare DNS record pointed at this host's current public IP
 
 ### Attaching Services from Other Repositories
@@ -75,6 +77,9 @@ Configure the following variables in your `.env` file:
 | `PGID` | Group ID for containers | 1001 |
 | `TZ` | Timezone | America/Fortaleza |
 | `LAN_IP` | Host IP that published ports bind to (required, keeps LAN services off `0.0.0.0`) | — |
+| `OPENROUTER_API_KEY` | API key for OpenRouter, used by Open WebUI to reach models | — |
+| `WEBUI_ADMIN_EMAIL` | Email for the Open WebUI admin account (bootstrap on first start only) | — |
+| `WEBUI_ADMIN_PASSWORD` | Password for the Open WebUI admin account (bootstrap on first start only) | — |
 | `CLOUDFLARE_API_TOKEN` | Cloudflare API token with `Zone:DNS:Edit` on the target zone | — |
 | `CLOUDFLARE_ZONE_ID` | Zone ID that owns the record(s) to update | — |
 | `CLOUDFLARE_RECORD_NAME` | Comma-separated record name(s), e.g. `home.example.com` | — |
@@ -109,6 +114,7 @@ docker-compose ps
 - Radarr: `http://<LAN_IP>:7878`
 - Sonarr: `http://<LAN_IP>:8989`
 - Bazarr: `http://<LAN_IP>:6767`
+- Open WebUI: `http://<LAN_IP>:8080`
 
 `<LAN_IP>` is the value set in `.env`. These ports are bound to that IP only: `localhost`/`127.0.0.1` on the host won't reach them; use the LAN IP directly (or an SSH tunnel to it). Caddy's `80`/`443` remain on all interfaces since they serve the public domain.
 
@@ -146,3 +152,5 @@ docker-compose up -d --remove-orphans
 - All services use the same user/group IDs (PUID/PGID) for proper file permissions;
 - Torrent downloads are stored in `$TORRENTS_PATH`, which should be mapped to `/torrents` inside containers;
 - `cloudflare-ddns` uses the [cloudflare-python](https://github.com/cloudflare/cloudflare-python) SDK to check the host's public IP on an interval and update the configured DNS record(s) when it changes; create a scoped API token (Zone:DNS:Edit) rather than a Global API Key;
+- Open WebUI: the admin account is created on first startup from `WEBUI_ADMIN_EMAIL`/`WEBUI_ADMIN_PASSWORD` (only when its database is empty), and signup then auto-disables; add household members from Admin Panel > Users, and leave those variables empty only if you accept that the first visitor claims the admin account;
+- Open WebUI does not use PUID/PGID; its `config/open-webui` directory will be owned by root on the host;

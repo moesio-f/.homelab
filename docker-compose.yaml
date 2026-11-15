@@ -137,6 +137,26 @@ services:
       - ${LAN_IP:?LAN IP is required in .env - see env.example}:6767:6767
     <<: *service-default
 
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    environment:
+      OPENAI_API_BASE_URL: https://openrouter.ai/api/v1
+      OPENAI_API_KEY: "${OPENROUTER_API_KEY}"
+      WEBUI_ADMIN_EMAIL: "${WEBUI_ADMIN_EMAIL}"
+      WEBUI_ADMIN_PASSWORD: "${WEBUI_ADMIN_PASSWORD}"
+      DEFAULT_USER_ROLE: pending
+      ENABLE_VERSION_UPDATE_CHECK: "false"
+      ENABLE_COMMUNITY_SHARING: "false"
+      ANONYMIZED_TELEMETRY: "false"
+      DO_NOT_TRACK: "true"
+      SCARF_NO_ANALYTICS: "true"
+    volumes:
+      - ./config/open-webui:/app/backend/data
+    ports:
+      - ${LAN_IP:?LAN IP is required in .env - see env.example}:8080:8080
+    <<: *service-default
+
   cloudflare-ddns:
     build: ./cloudflare-ddns
     container_name: cloudflare-ddns
